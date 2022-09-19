@@ -1,5 +1,6 @@
 package com.edu.ulab.app.web.handler;
 
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public final class ExceptionHandlerUtils {
