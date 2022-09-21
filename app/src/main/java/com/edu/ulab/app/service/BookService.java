@@ -11,7 +11,5 @@ public interface BookService {
 
     List<BookDto> getBooksByUserId(Long id);
 
-//    BookDto getBookById(Long id);
-
-    void deleteBookById(Long id);
+    void deleteBookByUserId(Long id);
 }

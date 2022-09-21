@@ -1,9 +1,10 @@
 package com.edu.ulab.app.service.impl;
 
-
 import com.edu.ulab.app.dto.BookDto;
+import com.edu.ulab.app.entity.BookEntity;
+import com.edu.ulab.app.mapper.BookMapper;
 import com.edu.ulab.app.service.BookService;
-import com.edu.ulab.app.storage.Dao.Impl.StorageDaoImpl;
+import com.edu.ulab.app.storage.StorageBooks;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,35 +13,43 @@ import java.util.List;
 @Slf4j
 @Service
 public class BookServiceImpl implements BookService {
+    StorageBooks storage;
+    BookMapper mapper;
 
-    private final StorageDaoImpl storageDaoImpl;
-
-    public BookServiceImpl(StorageDaoImpl storageDaoImpl) {
-        this.storageDaoImpl = storageDaoImpl;
+    BookServiceImpl(StorageBooks storage, BookMapper mapper) {
+        this.storage = storage;
+        this.mapper = mapper;
     }
 
     @Override
     public BookDto createBook(BookDto bookDto) {
-        return storageDaoImpl.createBook(bookDto);
+        bookDto.setId(storage.generateId());
+        BookEntity book = storage.save(mapper.bookDtoToBookEntity(bookDto));
+        return mapper.bookEntityToBookDto(book);
     }
 
     @Override
     public BookDto updateBook(BookDto bookDto) {
-        return storageDaoImpl.updateBook(bookDto);
+        if (bookDto.getId() == null) {
+            log.info("Added book with new id");
+            return createBook(bookDto);
+        } else {
+            log.info("Update book with existing id");
+            BookEntity bookEntity = storage.updateBook(mapper.bookDtoToBookEntity(bookDto));
+            return mapper.bookEntityToBookDto(bookEntity);
+        }
     }
 
     @Override
-    public List<BookDto> getBooksByUserId(Long id) {
-        return storageDaoImpl.getUserBooks(id);
+    public List<BookDto> getBooksByUserId(Long userId) {
+        return storage.getByUserId(userId)
+                .stream()
+                .map(mapper::bookEntityToBookDto)
+                .toList();
     }
 
     @Override
-    public BookDto getBookById(Long id) {
-        return storageDaoImpl.getBook(id);
-    }
-
-    @Override
-    public void deleteBookById(Long id) {
-        storageDaoImpl.deleteBook(id);
+    public void deleteBookByUserId(Long id) {
+        storage.deleteByUserId(id);
     }
 }
