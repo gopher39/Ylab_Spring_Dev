@@ -1,13 +1,13 @@
 package com.edu.ulab.app.storage;
 
-import com.edu.ulab.app.entity.UserEntity;
+import com.edu.ulab.app.entity.EntityUser;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class StorageUsers {
-    private final Storage<UserEntity> storage;
+    private final Storage<EntityUser> storage;
 
-    public StorageUsers(Storage<UserEntity> storage) {
+    public StorageUsers(Storage<EntityUser> storage) {
         this.storage = storage;
     }
 
@@ -15,16 +15,16 @@ public class StorageUsers {
         return storage.generateId();
     }
 
-    public UserEntity save(UserEntity entity) {
+    public EntityUser save(EntityUser entity) {
         return storage.saveEntity(entity);
     }
 
-    public UserEntity getById(Long id) {
+    public EntityUser getById(Long id) {
         return storage.getById(id);
     }
 
-    public UserEntity updateUser(UserEntity user) {
-        UserEntity userUpdate = getById(user.getId());
+    public EntityUser updateUser(EntityUser user) {
+        EntityUser userUpdate = getById(user.getId());
         userUpdate.update(user);
         return userUpdate;
     }

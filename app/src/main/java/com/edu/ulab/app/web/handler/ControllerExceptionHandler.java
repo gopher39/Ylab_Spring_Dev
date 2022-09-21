@@ -1,6 +1,5 @@
 package com.edu.ulab.app.web.handler;
 
-
 import com.edu.ulab.app.exception.NotFoundException;
 import com.edu.ulab.app.web.response.BaseWebResponse;
 import lombok.NonNull;

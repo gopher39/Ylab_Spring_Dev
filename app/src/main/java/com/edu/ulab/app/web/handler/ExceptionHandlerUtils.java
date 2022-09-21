@@ -1,6 +1,5 @@
 package com.edu.ulab.app.web.handler;
 
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public final class ExceptionHandlerUtils {
@@ -14,7 +13,9 @@ public final class ExceptionHandlerUtils {
 
         Throwable cause;
         if ((cause = t.getCause()) != null) {
-            message.append(", cause: ").append(ExceptionUtils.getMessage(cause));
+            message.append(", cause: ")
+                    .append(ExceptionUtils
+                            .getMessage(cause));
         }
 
         return message.toString();

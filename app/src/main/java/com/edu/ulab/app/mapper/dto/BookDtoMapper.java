@@ -2,13 +2,13 @@ package com.edu.ulab.app.mapper.dto;
 
 
 import com.edu.ulab.app.dto.BookDto;
-import com.edu.ulab.app.entity.BookEntity;
+import com.edu.ulab.app.entity.EntityBook;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface BookDtoMapper {
 
-    BookDto bookToBookDto(BookEntity bookEntity);
+    BookDto bookToBookDto(EntityBook entityBook);
 
-    BookEntity bookDtoToBook(BookDto bookDto);
+    EntityBook bookDtoToBook(BookDto bookDto);
 }

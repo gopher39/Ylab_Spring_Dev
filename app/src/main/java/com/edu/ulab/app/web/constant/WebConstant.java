@@ -1,6 +1,5 @@
 package com.edu.ulab.app.web.constant;
 
-
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

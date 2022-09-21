@@ -1,7 +1,7 @@
 package com.edu.ulab.app.service.impl;
 
 import com.edu.ulab.app.dto.BookDto;
-import com.edu.ulab.app.entity.BookEntity;
+import com.edu.ulab.app.entity.EntityBook;
 import com.edu.ulab.app.mapper.BookMapper;
 import com.edu.ulab.app.service.BookService;
 import com.edu.ulab.app.storage.StorageBooks;
@@ -24,7 +24,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto createBook(BookDto bookDto) {
         bookDto.setId(storage.generateId());
-        BookEntity book = storage.save(mapper.bookDtoToBookEntity(bookDto));
+        EntityBook book = storage.save(mapper.bookDtoToBookEntity(bookDto));
         return mapper.bookEntityToBookDto(book);
     }
 
@@ -35,8 +35,8 @@ public class BookServiceImpl implements BookService {
             return createBook(bookDto);
         } else {
             log.info("Update book with existing id");
-            BookEntity bookEntity = storage.updateBook(mapper.bookDtoToBookEntity(bookDto));
-            return mapper.bookEntityToBookDto(bookEntity);
+            EntityBook entityBook = storage.updateBook(mapper.bookDtoToBookEntity(bookDto));
+            return mapper.bookEntityToBookDto(entityBook);
         }
     }
 

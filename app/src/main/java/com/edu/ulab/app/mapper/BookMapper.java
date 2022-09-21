@@ -1,7 +1,7 @@
 package com.edu.ulab.app.mapper;
 
 import com.edu.ulab.app.dto.BookDto;
-import com.edu.ulab.app.entity.BookEntity;
+import com.edu.ulab.app.entity.EntityBook;
 import com.edu.ulab.app.web.request.BookRequest;
 import org.mapstruct.Mapper;
 
@@ -12,7 +12,7 @@ public interface BookMapper {
 
     BookRequest bookDtoToBookRequest(BookDto bookDto);
 
-    BookEntity bookDtoToBookEntity(BookDto bookDto);
+    EntityBook bookDtoToBookEntity(BookDto bookDto);
 
-    BookDto bookEntityToBookDto(BookEntity bookEntity);
+    BookDto bookEntityToBookDto(EntityBook entityBook);
 }

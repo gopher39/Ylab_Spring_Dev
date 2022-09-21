@@ -1,7 +1,7 @@
 package com.edu.ulab.app.service.impl;
 
 import com.edu.ulab.app.dto.UserDto;
-import com.edu.ulab.app.entity.UserEntity;
+import com.edu.ulab.app.entity.EntityUser;
 import com.edu.ulab.app.mapper.UserMapper;
 import com.edu.ulab.app.service.UserService;
 import com.edu.ulab.app.storage.StorageUsers;
@@ -26,14 +26,14 @@ public class UserServiceImpl implements UserService {
             // создать пользователя
             // вернуть сохраненного пользователя со всеми необходимыми полями id
             userDto.setId(storage.generateId());
-            UserEntity entity = storage.save(mapper.userDtoToUserEntity(userDto));
+            EntityUser entity = storage.save(mapper.userDtoToUserEntity(userDto));
             return mapper.userEntityToUserDto(entity);
         }
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-        UserEntity userEntity = storage.updateUser(mapper.userDtoToUserEntity(userDto));
-        return mapper.userEntityToUserDto(userEntity);
+        EntityUser entityUser = storage.updateUser(mapper.userDtoToUserEntity(userDto));
+        return mapper.userEntityToUserDto(entityUser);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/create")
-    @Operation(summary = "Create user book row.",
+    @Operation(summary = "Create user book.",
             responses = {
                     @ApiResponse(description = "User book",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -38,14 +38,14 @@ public class UserController {
     public UserBookResponse createUserWithBooks(@RequestBody UserBookRequest request,
                                                 @RequestHeader(RQID) @Pattern(regexp = REQUEST_ID_PATTERN) final String requestId) {
         UserBookResponse response = userDataFacade.createUserWithBooks(request);
-        log.info("Response with created user and his books: {}", response);
+        log.info("Response from created user and his books: {}", response);
         return response;
     }
 
     @PutMapping(value = "/update")
     public UserBookResponse updateUserWithBooks(@RequestBody UserBookRequest request) {
         UserBookResponse response = userDataFacade.updateUserWithBooks(request);
-        log.info("Response with updated user and his books: {}", response);
+        log.info("Response from updated user and his books: {}", response);
         return response;
     }
 
@@ -58,7 +58,7 @@ public class UserController {
 
     @DeleteMapping(value = "/delete/{userId}")
     public void deleteUserWithBooks(@PathVariable Long userId) {
-        log.info("Delete user and his books:  userId {}", userId);
+        log.info("Delete user and his books: With userId {}", userId);
         userDataFacade.deleteUserWithBooks(userId);
     }
 }

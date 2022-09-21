@@ -1,6 +1,6 @@
 package com.edu.ulab.app.storage;
 
-import com.edu.ulab.app.entity.BookEntity;
+import com.edu.ulab.app.entity.EntityBook;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -9,9 +9,9 @@ import java.util.Objects;
 
 @Repository
 public class StorageBooks {
-    Storage<BookEntity> storage;
+    Storage<EntityBook> storage;
 
-    StorageBooks(Storage<BookEntity> storage) {
+    StorageBooks(Storage<EntityBook> storage) {
         this.storage = storage;
     }
 
@@ -19,23 +19,23 @@ public class StorageBooks {
         return storage.generateId();
     }
 
-    public BookEntity save(BookEntity book) {
+    public EntityBook save(EntityBook book) {
         return storage.saveEntity(book);
     }
 
-    public List<BookEntity> getByUserId(Long id) {
+    public List<EntityBook> getByUserId(Long id) {
         return getAllBooks()
                 .stream()
                 .filter(book -> Objects.equals(book.getUserId(), id))
                 .toList();
     }
 
-    public Collection<BookEntity> getAllBooks() {
+    public Collection<EntityBook> getAllBooks() {
         return storage.getValues();
     }
 
-    public BookEntity updateBook(BookEntity book) {
-        BookEntity bookUpdate = storage.getById(book.getId());
+    public EntityBook updateBook(EntityBook book) {
+        EntityBook bookUpdate = storage.getById(book.getId());
         bookUpdate.update(book);
         return bookUpdate;
     }
@@ -45,6 +45,8 @@ public class StorageBooks {
     }
 
     public void deleteByUserId(Long id) {
-        getByUserId(id).stream().map(BookEntity::getUserId).forEach(this::deleteBookById);
+        getByUserId(id).stream()
+                .map(EntityBook::getUserId)
+                .forEach(this::deleteBookById);
     }
 }
