@@ -4,13 +4,11 @@ import com.edu.ulab.app.dto.BookDto;
 import com.edu.ulab.app.dto.UserDto;
 import com.edu.ulab.app.mapper.BookMapper;
 import com.edu.ulab.app.mapper.UserMapper;
-import com.edu.ulab.app.mapper.update.BookUpdateMapper;
-import com.edu.ulab.app.mapper.update.UserUpdateMapper;
 import com.edu.ulab.app.service.BookService;
 import com.edu.ulab.app.service.UserService;
+import com.edu.ulab.app.validation.ValidatorService;
 import com.edu.ulab.app.web.request.UserBookRequest;
 import com.edu.ulab.app.web.response.UserBookResponse;
-import com.edu.ulab.app.web.response.update.UserBookRequestUpdate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,37 +22,30 @@ public class UserDataFacade {
     private final BookService bookService;
     private final UserMapper userMapper;
     private final BookMapper bookMapper;
-
-    private final BookUpdateMapper bookUpdateMapper;
-
-    private final UserUpdateMapper userUpdateMapper;
-
+    private final ValidatorService validator;
 
     public UserDataFacade(UserService userService,
                           BookService bookService,
                           UserMapper userMapper,
                           BookMapper bookMapper,
-                          BookUpdateMapper bookUpdateMapper,
-                          UserUpdateMapper userUpdateMapper) {
+                          ValidatorService validator) {
         this.userService = userService;
         this.bookService = bookService;
         this.userMapper = userMapper;
         this.bookMapper = bookMapper;
-        this.bookUpdateMapper = bookUpdateMapper;
-        this.userUpdateMapper = userUpdateMapper;
+        this.validator = validator;
     }
 
     public UserBookResponse createUserWithBooks(UserBookRequest userBookRequest) {
         log.info("Got user book create request: {}", userBookRequest);
-        UserDto userDto = userMapper.userRequestToUserDto(userBookRequest
-                .getUserRequest());
-        //подправить метод, чтобы он обращался к реальному хранилищу
-        //и получать реального юзера
+        validator.validateCreateUserRequest(userBookRequest.getUserRequest());
+        UserDto userDto = userMapper.userRequestToUserDto(userBookRequest.getUserRequest());
         log.info("Mapped user request: {}", userDto);
 
         UserDto createdUser = userService.createUser(userDto);
         log.info("Created user: {}", createdUser);
 
+        validator.validateCreateBookRequest(userBookRequest.getBookRequests());
         List<Long> bookIdList = userBookRequest.getBookRequests()
                 .stream()
                 .filter(Objects::nonNull)
@@ -73,47 +64,55 @@ public class UserDataFacade {
                 .build();
     }
 
-    public UserBookResponse updateUserWithBooks(UserBookRequestUpdate userBookRequest) {
-        //реализовать метод
-        UserDto userDto =  userService.updateUser(userUpdateMapper.userRequestUpdateToUserDto(userBookRequest.getUserRequest()));
-        log.info("Update user: {}", userDto);
-        List<Long> listBooksId = userBookRequest.getBookRequests()
+    public UserBookResponse updateUserWithBooks(UserBookRequest userBookRequest) {
+        log.info("Got user book update request: {}", userBookRequest);
+        validator.validateUpdateUserRequest(userBookRequest.getUserRequest());
+
+        UserDto userDto = userMapper.userRequestToUserDto(userBookRequest.getUserRequest());
+        log.info("Mapped user request: {}", userDto);
+
+        UserDto userUpdated = userService.updateUser(userDto);
+        log.info("Updated user: {}", userUpdated);
+
+        validator.validateUpdateBookRequest(userBookRequest.getBookRequests());
+        List<Long> bookIdList = userBookRequest.getBookRequests()
                 .stream()
                 .filter(Objects::nonNull)
-                .map(bookUpdateMapper::bookRequestUpdateToBookDto)
-                .peek(n -> n.setUserId(userDto.getId()))
+                .map(bookMapper::bookRequestToBookDto)
+                .peek(bookDto -> bookDto.setUserId(userUpdated.getId()))
+                .peek(mappedBookDto -> log.info("mapped book: {}", mappedBookDto))
                 .map(bookService::updateBook)
-                .peek(n -> log.info(n.toString()))
+                .peek(updateBook -> log.info("Updated book: {}", updateBook))
                 .map(BookDto::getId)
                 .toList();
-        log.info("Collected updates book ids: {}", listBooksId);
+        log.info("Collected book ids: {}", bookIdList);
+
         return UserBookResponse.builder()
-                .userId(userDto.getId())
-                .booksIdList(listBooksId)
+                .userId(userUpdated.getId())
+                .booksIdList(bookIdList)
                 .build();
     }
 
     public UserBookResponse getUserWithBooks(Long userId) {
-        //реализовать метод
+        log.info("Got user book get request: {}", userId);
+        validator.validateId(userId);
         UserDto userDto = userService.getUserById(userId);
-        log.info("User: {}", userDto);
-        List<Long> listBooksId = bookService.getBooksByUserId(userId)
+        List<Long> bookIdList = bookService.getBooksByUserId(userDto.getId())
                 .stream()
                 .map(BookDto::getId)
                 .toList();
-        log.info("Collected book ids: {}", listBooksId);
+
         return UserBookResponse.builder()
                 .userId(userDto.getId())
-                .booksIdList(listBooksId)
+                .booksIdList(bookIdList)
                 .build();
     }
 
     public void deleteUserWithBooks(Long userId) {
-        //реализовать метод
-        bookService.getBooksByUserId(userId)
-                .stream()
-                .map(BookDto::getId)
-                .forEach(bookService::deleteBookById);
+        log.info("Got user book delete request: {}", userId);
+        validator.validateId(userId);
         userService.deleteUserById(userId);
+        bookService.deleteBookByUserId(userId);
+        log.info("Delete user and his books{}", userId);
     }
 }

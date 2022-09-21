@@ -1,13 +1,12 @@
 package com.edu.ulab.app.mapper.dto;
 
-
 import com.edu.ulab.app.dto.UserDto;
-import com.edu.ulab.app.entity.User;
+import com.edu.ulab.app.entity.EntityUser;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface UserDtoMapper {
-    UserDto userToUserDto(User user);
+    UserDto userToUserDto(EntityUser entityUser);
 
-    User userDtoToUser(UserDto userDto);
+    EntityUser userDtoToUser(UserDto userDto);
 }
