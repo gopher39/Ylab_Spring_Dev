@@ -1,39 +1,48 @@
 package com.edu.ulab.app.service.impl;
 
 import com.edu.ulab.app.dto.UserDto;
+import com.edu.ulab.app.entity.EntityUser;
+import com.edu.ulab.app.mapper.UserMapper;
 import com.edu.ulab.app.service.UserService;
-import com.edu.ulab.app.storage.Dao.Impl.StorageDaoImpl;
+import com.edu.ulab.app.storage.StorageUsers;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final StorageDaoImpl storageDaoImpl;
+    StorageUsers storage;
+    UserMapper mapper;
 
-    @Autowired
-    public UserServiceImpl(StorageDaoImpl storageDaoImpl) {
-        this.storageDaoImpl = storageDaoImpl;
+    UserServiceImpl(StorageUsers storage, UserMapper userMapper) {
+        this.storage = storage;
+        this.mapper = userMapper;
     }
-    @Override
-    public UserDto createUser(UserDto userDto) {
-        return storageDaoImpl.createUser(userDto);
-    }
+
+        @Override
+        public UserDto createUser(UserDto userDto) {
+            // сгенерировать идентификатор
+            // создать пользователя
+            // вернуть сохраненного пользователя со всеми необходимыми полями id
+            userDto.setId(storage.generateId());
+            EntityUser entity = storage.save(mapper.userDtoToUserEntity(userDto));
+            return mapper.userEntityToUserDto(entity);
+        }
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-        return storageDaoImpl.updateUser(userDto);
+        EntityUser entityUser = storage.updateUser(mapper.userDtoToUserEntity(userDto));
+        return mapper.userEntityToUserDto(entityUser);
     }
 
     @Override
     public UserDto getUserById(Long id) {
-        return storageDaoImpl.getUser(id);
+        return mapper.userEntityToUserDto(storage.getById(id));
     }
 
     @Override
     public void deleteUserById(Long id) {
-        storageDaoImpl.deleteUser(id);
+        storage.deleteUserById(id);
     }
 }
